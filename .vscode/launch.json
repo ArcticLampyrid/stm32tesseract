@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "stm32_tesseract up",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=stm32_tesseract",
+                    "--package=stm32_tesseract"
+                ],
+                "filter": {
+                    "name": "stm32_tesseract",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "up"
+            ],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
