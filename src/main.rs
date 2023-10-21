@@ -1,11 +1,13 @@
 mod arm_embedded_gcc_install;
 mod cmake_install;
+mod cmake_lists_template_expender;
 mod cproject_reader;
 mod error;
 mod gh_helper;
 mod ninja_install;
 mod openocd_install;
 mod path_env;
+mod simple_template;
 
 use std::{fs, path::PathBuf};
 
@@ -100,14 +102,18 @@ fn command_tesseract(file: &str) {
     println!("CProjectFile: {}", cproject_path.display());
     println!("Project name: {}", info.project_name);
     println!("Target MCU: {}", info.target_mcu);
-    println!(
-        "Target CPU: {}",
-        info.target_cpu.unwrap_or_else(|| "Unknown".to_string())
-    );
+    if let Some(mcpu) = &info.target_cpu {
+        println!("Target CPU: {}", mcpu);
+    } else {
+        println!("Target CPU: Unknown");
+    }
     println!("Linker script: {}", info.linker_script);
     println!("Defined symbols: {:?}", info.defined_symbols);
     println!("Include paths: {:?}", info.include_paths);
     println!("Source entries: {:?}", info.source_entries);
+
+    println!("====== Expend CMakeLists Template ======");
+    cmake_lists_template_expender::expend_cmake_lists_template(cproject_path.as_path(), &info);
 }
 
 fn main() {
