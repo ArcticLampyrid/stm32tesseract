@@ -16,11 +16,11 @@ pub struct CProjectInfo {
 
 const XPATH_PROJECT_NAME: &str =
     "/cproject/storageModule[@moduleId='cdtBuildSystem']/project/@name[1]";
-const XPATH_LINKER_SCRIPT: &str = "/cproject/storageModule[@moduleId='org.eclipse.cdt.core.settings']/cconfiguration[last()]/storageModule[@moduleId='cdtBuildSystem']/configuration[@artifactExtension='elf']/folderInfo/toolChain/tool/option[@superClass='com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.linker.option.script']/@value[1]";
-const XPATH_TARGET_MCU: &str = "/cproject/storageModule[@moduleId='org.eclipse.cdt.core.settings']/cconfiguration[last()]/storageModule[@moduleId='cdtBuildSystem']/configuration[@artifactExtension='elf']/folderInfo/toolChain/option[@superClass='com.st.stm32cube.ide.mcu.gnu.managedbuild.option.target_mcu']/@value[1]";
-const XPATH_DEFINED_SYMBOLS: &str = "/cproject/storageModule[@moduleId='org.eclipse.cdt.core.settings']/cconfiguration[last()]/storageModule[@moduleId='cdtBuildSystem']/configuration[@artifactExtension='elf']/folderInfo/toolChain/tool/option[@superClass='com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.definedsymbols']/listOptionValue/@value";
-const XPATH_INCLUDE_PATHS: &str = "/cproject/storageModule[@moduleId='org.eclipse.cdt.core.settings']/cconfiguration[last()]/storageModule[@moduleId='cdtBuildSystem']/configuration[@artifactExtension='elf']/folderInfo/toolChain/tool/option[@superClass='com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths']/listOptionValue/@value";
-const XPATH_SOURCE_ENTRIES: &str = "/cproject/storageModule[@moduleId='org.eclipse.cdt.core.settings']/cconfiguration[last()]/storageModule[@moduleId='cdtBuildSystem']/configuration[@artifactExtension='elf']/sourceEntries/entry[@kind='sourcePath']/@name";
+const XPATH_LINKER_SCRIPT: &str = "/cproject/storageModule[@moduleId='org.eclipse.cdt.core.settings']/cconfiguration[1]/storageModule[@moduleId='cdtBuildSystem']/configuration[@artifactExtension='elf']/folderInfo/toolChain/tool/option[@superClass='com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.linker.option.script']/@value[1]";
+const XPATH_TARGET_MCU: &str = "/cproject/storageModule[@moduleId='org.eclipse.cdt.core.settings']/cconfiguration[1]/storageModule[@moduleId='cdtBuildSystem']/configuration[@artifactExtension='elf']/folderInfo/toolChain/option[@superClass='com.st.stm32cube.ide.mcu.gnu.managedbuild.option.target_mcu']/@value[1]";
+const XPATH_DEFINED_SYMBOLS: &str = "/cproject/storageModule[@moduleId='org.eclipse.cdt.core.settings']/cconfiguration[1]/storageModule[@moduleId='cdtBuildSystem']/configuration[@artifactExtension='elf']/folderInfo/toolChain/tool/option[@superClass='com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.definedsymbols']";
+const XPATH_INCLUDE_PATHS: &str = "/cproject/storageModule[@moduleId='org.eclipse.cdt.core.settings']/cconfiguration[1]/storageModule[@moduleId='cdtBuildSystem']/configuration[@artifactExtension='elf']/folderInfo/toolChain/tool/option[@superClass='com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths']";
+const XPATH_SOURCE_ENTRIES: &str = "/cproject/storageModule[@moduleId='org.eclipse.cdt.core.settings']/cconfiguration[1]/storageModule[@moduleId='cdtBuildSystem']/configuration[@artifactExtension='elf']/sourceEntries";
 
 fn main_cpu_type_from_mcu_name(mcu_name: &str) -> Option<String> {
     if mcu_name.len() < 7 {
@@ -65,15 +65,23 @@ pub fn read_cproject(document: Document) -> Result<CProjectInfo, CProjectReaderE
     let defined_symbols = match evaluate_xpath(&document, XPATH_DEFINED_SYMBOLS)? {
         Value::Nodeset(nodeset) => nodeset
             .into_iter()
-            .map(|node| node.string_value())
+            .flat_map(|parent| parent.children())
+            .filter_map(|node| node.element())
+            .filter(|elem| elem.name().local_part() == "listOptionValue")
+            .filter_map(|elem| elem.attribute("value"))
+            .map(|attr| attr.value().to_string())
             .collect(),
         _ => vec![],
     };
     let include_paths = match evaluate_xpath(&document, XPATH_INCLUDE_PATHS)? {
         Value::Nodeset(nodeset) => nodeset
             .into_iter()
-            .map(|node| {
-                let mut path = node.string_value();
+            .flat_map(|parent| parent.children())
+            .filter_map(|node| node.element())
+            .filter(|elem| elem.name().local_part() == "listOptionValue")
+            .filter_map(|elem| elem.attribute("value"))
+            .map(|attr| attr.value().to_string())
+            .map(|mut path| {
                 if path.starts_with("../") {
                     path = path.replacen("../", "", 1);
                 }
@@ -85,7 +93,15 @@ pub fn read_cproject(document: Document) -> Result<CProjectInfo, CProjectReaderE
     let source_entries = match evaluate_xpath(&document, XPATH_SOURCE_ENTRIES)? {
         Value::Nodeset(nodeset) => nodeset
             .into_iter()
-            .map(|node| node.string_value())
+            .flat_map(|parent| parent.children())
+            .filter_map(|node| node.element())
+            .filter(|elem| elem.name().local_part() == "entry")
+            .filter(|elem| {
+                elem.attribute("kind")
+                    .is_some_and(|attr| attr.value() == "sourcePath")
+            })
+            .filter_map(|elem| elem.attribute("name"))
+            .map(|attr| attr.value().to_string())
             .collect(),
         _ => vec![],
     };
