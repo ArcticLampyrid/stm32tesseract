@@ -17,3 +17,5 @@ flate2 = "1.0.28"
 tempfile = "3.8.0"
 sxd-document = "0.3.2"
 sxd-xpath = "0.4.2"
+regex = "1.10.2"
+rhai = { version = "1", features = ["serde"] }

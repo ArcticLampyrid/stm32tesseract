@@ -1,6 +1,7 @@
 mod arm_embedded_gcc_install;
 mod cmake_install;
 mod cmake_lists_template_expender;
+mod cmake_project_generator;
 mod cproject_reader;
 mod error;
 mod gh_helper;
@@ -17,8 +18,9 @@ use which::which_global;
 
 use crate::{
     arm_embedded_gcc_install::install_arm_embedded_gcc, cmake_install::install_cmake,
-    cproject_reader::read_cproject_file, ninja_install::install_ninja,
-    openocd_install::install_openocd, path_env::check_path_env_permission,
+    cmake_project_generator::CMakeProjectGeneratorParams, cproject_reader::read_cproject_file,
+    ninja_install::install_ninja, openocd_install::install_openocd,
+    path_env::check_path_env_permission,
 };
 
 #[derive(Parser)]
@@ -111,6 +113,13 @@ fn command_tesseract(file: &str) {
     println!("Defined symbols: {:?}", info.defined_symbols);
     println!("Include paths: {:?}", info.include_paths);
     println!("Source entries: {:?}", info.source_entries);
+
+    println!("====== Generate CMake Project ======");
+    cmake_project_generator::generate_cmake_project(
+        &CMakeProjectGeneratorParams { info: &info },
+        cproject_path.as_path(),
+    )
+    .expect("Failed to generate CMake project");
 
     println!("====== Expend CMakeLists Template ======");
     cmake_lists_template_expender::expend_cmake_lists_template(cproject_path.as_path(), &info);

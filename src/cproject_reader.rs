@@ -1,9 +1,11 @@
 use std::path::Path;
 
+use serde::{Deserialize, Serialize};
 use sxd_document::dom::Document;
 use sxd_xpath::{evaluate_xpath, Value};
 
 use crate::error::CProjectReaderError;
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CProjectInfo {
     pub project_name: String,
     pub target_mcu: String,
