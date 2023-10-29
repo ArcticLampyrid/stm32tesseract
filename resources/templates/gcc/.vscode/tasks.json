@@ -1,0 +1,36 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Dwonload (OpenOCD)",
+            "type": "shell",
+            "command": "openocd",
+            "options": {
+                "cwd": "${command:cmake.launchTargetDirectory}"
+            },
+            "args": [
+                "-s",
+                "${workspaceFolder}",
+                "-f",
+                "openocd.cfg",
+                "-c",
+                "init",
+                "-c",
+                "reset halt",
+                "-c",
+                "flash write_image erase ${command:cmake.launchTargetFilename}",
+                "-c",
+                "reset",
+                "-c",
+                "shutdown"
+            ],
+            "group": {
+                "kind": "none"
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

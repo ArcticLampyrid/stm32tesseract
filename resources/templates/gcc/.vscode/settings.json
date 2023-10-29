@@ -1,0 +1,9 @@
+{
+    "cmake.useCMakePresets": "always",
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.autoAddFileAssociations": false,
+    "files.associations": {
+        "Drivers/**.c": "c",
+        "Drivers/**.h": "c"
+    }
+}
