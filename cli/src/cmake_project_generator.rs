@@ -23,9 +23,14 @@ pub struct CMakeProjectGeneratorParams<'a> {
 
 fn get_cmake_project_template_path() -> io::Result<PathBuf> {
     let mut path = env::current_exe()?;
-    path.pop();
-    path.pop();
-    path.pop();
+    path.pop(); // File name
+    if cfg!(debug_assertions) {
+        path.pop(); // Debug folder
+        path.pop(); // Target folder
+        path.push("cli");
+    } else {
+        path.pop(); // Bin folder
+    }
     path.push("resources");
     path.push("templates");
     path.push("gcc");

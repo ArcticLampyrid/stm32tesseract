@@ -1,0 +1,21 @@
+[package]
+name = "stm32tesseract"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.4.6", features = ["derive"] }
+which = "5.0.0"
+thiserror = "1.0"
+reqwest = { version = "0.11.22", features = ["blocking", "json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1.0"
+zip = "0.6.6"
+winreg = "0.51.0"
+tar = "0.4.40"
+flate2 = "1.0.28"
+tempfile = "3.8.0"
+sxd-document = "0.3.2"
+sxd-xpath = "0.4.2"
+regex = "1.10.2"
+rhai = { version = "1", features = ["serde"] }

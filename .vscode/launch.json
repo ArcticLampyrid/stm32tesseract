@@ -4,15 +4,15 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "stm32_tesseract up",
+            "name": "stm32tesseract up",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=stm32_tesseract",
-                    "--package=stm32_tesseract"
+                    "--bin=stm32tesseract",
+                    "--package=stm32tesseract"
                 ],
                 "filter": {
-                    "name": "stm32_tesseract",
+                    "name": "stm32tesseract",
                     "kind": "bin"
                 }
             },
