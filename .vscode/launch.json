@@ -20,6 +20,24 @@
                 "up"
             ],
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "stm32tesseract-gui",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=stm32tesseract-gui",
+                    "--package=stm32tesseract-gui"
+                ],
+                "filter": {
+                    "name": "stm32tesseract-gui",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }

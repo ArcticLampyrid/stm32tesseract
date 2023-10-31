@@ -1,0 +1,136 @@
+import { Button, VerticalBox, TabWidget, HorizontalBox, LineEdit, TextEdit, AboutSlint } from "std-widgets.slint";
+
+export component AppWindow inherits Window {
+    title: "STM32Tesseract";
+    preferred-height: 320pt;
+    preferred-width: 480pt;
+    in property<string> env-status: "OK";
+    in property <string> output: "Welcome to STM32Tesseract!\n";
+    in-out property <string> cproject-path <=> cproject-path-edit.text;
+    callback env-check();
+    callback env-up();
+    callback select-cproject();
+    callback act();
+    TabWidget {
+        Tab {
+            title: "Environment";
+            VerticalBox {
+                HorizontalBox {
+                    padding: 0;
+                    Text {
+                        horizontal-stretch: 1;
+                        vertical-alignment: center;
+                        text: "Status: \{root.env_status}";
+                    }
+                    Button {
+                        text: "Check";
+                        clicked => {
+                            root.env-check();
+                        }
+                    }
+                }
+                HorizontalBox {
+                    padding: 0;
+                    Text {
+                        horizontal-stretch: 1;
+                        vertical-alignment: center;
+                        text: "Action: ";
+                    }
+                    Button {
+                        text: "Up";
+                        clicked => {
+                            root.env-up();
+                        }
+                    }
+                }
+                Text {
+                    vertical-stretch: 0;
+                    text: "Output:";
+                    vertical-alignment: center;
+                }
+                TextEdit {
+                    horizontal-stretch: 1;
+                    vertical-stretch: 1;
+                    read-only: true;
+                    text: root.output;
+                }
+            }
+        }
+        Tab {
+            title: "Tesseract";
+            VerticalBox {
+                HorizontalBox {
+                    padding: 0;
+                    Text {
+                        text: "Path: ";
+                        vertical-alignment: center;
+                    }
+                    cproject-path-edit := LineEdit {
+                        enabled: true;
+                        horizontal-stretch: 1; 
+                        placeholder-text: "Path to .cproject file";
+                    }
+                    Button {
+                        text: "...";
+                        clicked => {
+                            root.select-cproject();
+                        }
+                    }
+                }
+                HorizontalBox {
+                    padding: 0;
+                    Text {
+                        horizontal-stretch: 1;
+                        vertical-alignment: center;
+                        text: "Action: ";
+                    }
+                    Button {
+                        text: "Act";
+                        clicked => {
+                            root.act();
+                        }
+                    }
+                }
+                Text {
+                    vertical-stretch: 0;
+                    text: "Output:";
+                    vertical-alignment: center;
+                }
+                TextEdit {
+                    horizontal-stretch: 1;
+                    vertical-stretch: 1;
+                    read-only: true;
+                    text: root.output;
+                }
+            }
+        }
+        Tab {
+            title: "About";
+            VerticalBox {
+                alignment: space-between;
+                VerticalBox{
+                    alignment: center;
+                    Image {
+                        source: @image-url("logo.png");
+                        max-height: 100pt;
+                        min-height: 64pt;
+                        horizontal-stretch: 1;
+                    }
+                    Text {
+                        text: "STM32Tesseract";
+                        font-size: 20pt;
+                        font-weight: 700;
+                        horizontal-alignment: center;
+                    }
+                    Text {
+                        text: "Version 0.1\nAuthor: alampy.com";
+                        horizontal-alignment: center;
+                    }
+                }
+                AboutSlint {
+                    max-height: 108pt;
+                }
+            }
+        }
+    }
+}
