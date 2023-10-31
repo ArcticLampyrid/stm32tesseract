@@ -93,10 +93,10 @@ pub fn install_arm_embedded_gcc_windows() -> Result<(), InstallError> {
         return Err(InstallError::MetadataError());
     }
     let system_drive = env::var("SYSTEMDRIVE").unwrap_or("C:".to_string());
-    zip.extract(format!("{}\\cube_cast", system_drive))
+    zip.extract(format!("{}\\stm32tesseract_tools", system_drive))
         .map_err(|_| InstallError::UnknownError())?;
     let folder_path = format!(
-        "{}\\cube_cast\\{}\\bin",
+        "{}\\stm32tesseract_tools\\{}\\bin",
         system_drive,
         top_folders.iter().next().unwrap()
     );

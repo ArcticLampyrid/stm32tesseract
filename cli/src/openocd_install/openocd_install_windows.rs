@@ -25,7 +25,7 @@ pub fn install_openocd_windows() -> Result<(), InstallError> {
     println!("Extracting...");
     let mut archive = Archive::new(flate2::read::GzDecoder::new(std::io::Cursor::new(content)));
     let system_drive = std::env::var("SYSTEMDRIVE").unwrap_or("C:".to_string());
-    let folder_path = format!("{}\\cube_cast\\openocd", system_drive);
+    let folder_path = format!("{}\\stm32tesseract_tools\\openocd", system_drive);
     std::fs::create_dir_all(&folder_path)?;
     archive.unpack(&folder_path)?;
     let openocd_bin_path = format!("{}\\bin", folder_path);

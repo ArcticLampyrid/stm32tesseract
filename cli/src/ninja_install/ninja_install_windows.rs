@@ -27,7 +27,7 @@ pub fn install_ninja_windows() -> Result<(), InstallError> {
     let mut zip = ZipArchive::new(std::io::Cursor::new(content))?;
     let mut ninja_exe_in_zip = zip.by_name("ninja.exe")?;
     let system_drive = env::var("SYSTEMDRIVE").unwrap_or("C:".to_string());
-    let folder_path = format!("{}\\cube_cast\\ninja", system_drive);
+    let folder_path = format!("{}\\stm32tesseract_tools\\ninja", system_drive);
     std::fs::create_dir_all(&folder_path)?;
     let mut ninja_exe_local = std::fs::File::create(format!("{}\\ninja.exe", folder_path))?;
     std::io::copy(&mut ninja_exe_in_zip, &mut ninja_exe_local)?;
