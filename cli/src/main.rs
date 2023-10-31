@@ -33,11 +33,34 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    Up {},
+    Env {
+        #[command(subcommand)]
+        command: EnvCommands,
+    },
     Tesseract {
         #[clap(short, long)]
         file: String,
     },
+}
+
+#[derive(Subcommand)]
+enum EnvCommands {
+    Check {},
+    Up {},
+}
+
+fn check_tool(name: &str, command: &str) -> bool {
+    println!("====== {} ======", name);
+    match which_global(command) {
+        Ok(path) => {
+            println!("Found: {}", path.display());
+            true
+        }
+        Err(_) => {
+            println!("Not found");
+            false
+        }
+    }
 }
 
 fn check_and_install<I>(name: &str, command: &str, install: I) -> Result<(), InstallError>
@@ -71,7 +94,22 @@ where
     }
 }
 
-fn command_set_up() {
+fn command_env_check() {
+    let mut okey = true;
+    okey &= check_tool("Ninja", "ninja");
+    okey &= check_tool("OpenOCD", "openocd");
+    okey &= check_tool("GNU Arm Embedded GCC", "arm-none-eabi-gcc");
+    okey &= check_tool("CMake", "cmake");
+    println!("====== Conclusion ======");
+    if okey {
+        println!("All good");
+    } else {
+        println!("Something went wrong");
+        std::process::exit(1);
+    }
+}
+
+fn command_env_up() {
     let mut okey = true;
     okey &= check_and_install("Ninja", "ninja", install_ninja).is_ok();
     okey &= check_and_install("OpenOCD", "openocd", install_openocd).is_ok();
@@ -128,9 +166,14 @@ fn command_tesseract(file: &str) {
 fn main() {
     let cli = Cli::parse();
     match &cli.command {
-        Commands::Up {} => {
-            command_set_up();
-        }
+        Commands::Env { command } => match command {
+            EnvCommands::Check {} => {
+                command_env_check();
+            }
+            EnvCommands::Up {} => {
+                command_env_up();
+            }
+        },
         Commands::Tesseract { file } => {
             command_tesseract(file.as_str());
         }
