@@ -39,7 +39,7 @@ fn get_cmake_project_template_path() -> io::Result<PathBuf> {
 
 fn match_filter(filter: &Vec<String>, target: &str) -> bool {
     for f in filter {
-        let regex_expression = f.strip_prefix('!').unwrap_or_else(|| f.as_str());
+        let regex_expression = f.strip_prefix('!').unwrap_or(f.as_str());
         let regex = match Regex::new(regex_expression) {
             Ok(r) => r,
             Err(_) => continue,

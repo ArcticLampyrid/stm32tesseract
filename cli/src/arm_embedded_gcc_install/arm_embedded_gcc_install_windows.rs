@@ -40,7 +40,7 @@ fn find_install_folder_via_registry() -> Option<String> {
             if key.contains("arm-none-eabi") {
                 let subkey_path = format!("SOFTWARE\\ARM\\{}", key);
                 let subkey = hklm
-                    .open_subkey_with_flags(&subkey_path, KEY_READ | KEY_WOW64_32KEY)
+                    .open_subkey_with_flags(subkey_path, KEY_READ | KEY_WOW64_32KEY)
                     .ok()?;
                 subkey.get_value("InstallFolder").ok()
             } else {

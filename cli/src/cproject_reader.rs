@@ -61,8 +61,7 @@ pub fn read_cproject(document: Document) -> Result<CProjectInfo, CProjectReaderE
         .last()
         .unwrap_or_default()
         .to_string()
-        .replace('{', "")
-        .replace('}', "");
+        .replace(['{', '}'], "");
 
     let defined_symbols = match evaluate_xpath(&document, XPATH_DEFINED_SYMBOLS)? {
         Value::Nodeset(nodeset) => nodeset

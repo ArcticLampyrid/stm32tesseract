@@ -25,7 +25,7 @@ fn do_env_check(ui_handle: &Weak<AppWindow>) {
     cmd.arg("env");
     cmd.arg("check");
     let ui_handle_2 = ui_handle.clone();
-    execute_cmd(&ui_handle, cmd, true, move |status| {
+    execute_cmd(ui_handle, cmd, true, move |status| {
         if status.success() {
             let _ = ui_handle_2.upgrade_in_event_loop(move |ui| {
                 ui.set_env_status("OK".into());
@@ -43,7 +43,7 @@ fn do_env_up(ui_handle: &Weak<AppWindow>) {
     cmd.arg("env");
     cmd.arg("up");
     let ui_handle_2 = ui_handle.clone();
-    execute_cmd(&ui_handle, cmd, true, move |status| {
+    execute_cmd(ui_handle, cmd, true, move |status| {
         if status.success() {
             let _ = ui_handle_2.upgrade_in_event_loop(move |ui| {
                 ui.set_env_status("OK".into());

@@ -22,7 +22,7 @@ pub fn add_to_path_env_windows(new_item: &str) -> io::Result<()> {
     )?;
     let current_path: String = env_key.get_value("Path").unwrap_or_default();
     if !current_path.contains(new_item) {
-        let new_path = if current_path.ends_with(";") {
+        let new_path = if current_path.ends_with(';') {
             format!("{}{}", current_path, new_item)
         } else {
             format!("{};{}", current_path, new_item)
