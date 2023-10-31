@@ -1,3 +1,5 @@
+#![windows_subsystem = "windows"]
+
 use native_dialog::FileDialog;
 use once_cell::sync::Lazy;
 use portable_pty::{native_pty_system, CommandBuilder, ExitStatus, PtySize};
