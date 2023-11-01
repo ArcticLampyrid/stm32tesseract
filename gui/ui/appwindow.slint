@@ -4,6 +4,7 @@ export component AppWindow inherits Window {
     title: "STM32Tesseract";
     preferred-height: 320pt;
     preferred-width: 480pt;
+    icon : @image-url("logo.png");
     in property<string> env-status: "OK";
     in property <string> output: "Welcome to STM32Tesseract!\n";
     in-out property <string> cproject-path <=> cproject-path-edit.text;
