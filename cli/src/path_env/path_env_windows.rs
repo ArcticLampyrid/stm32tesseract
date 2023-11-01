@@ -4,7 +4,7 @@ use std::io;
 use winreg::enums::*;
 use winreg::RegKey;
 
-pub fn check_path_env_permission_windows() -> io::Result<()> {
+pub fn check_path_env_permission() -> io::Result<()> {
     let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
     let env_key = hklm.open_subkey_with_flags(
         "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",
@@ -14,7 +14,7 @@ pub fn check_path_env_permission_windows() -> io::Result<()> {
     Ok(())
 }
 
-pub fn add_to_path_env_windows(new_item: &str) -> io::Result<()> {
+pub fn add_to_path_env(new_item: &str) -> io::Result<()> {
     let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
     let env_key = hklm.open_subkey_with_flags(
         "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",

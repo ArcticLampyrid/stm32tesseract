@@ -1,10 +1,6 @@
 use crate::{error::InstallError, gh_helper, path_env::add_to_path_env};
 use std::{collections::HashSet, env, io::Seek, path::PathBuf};
 use tempfile::tempfile;
-use winreg::{
-    enums::{HKEY_LOCAL_MACHINE, KEY_READ, KEY_WOW64_32KEY},
-    RegKey,
-};
 use zip::ZipArchive;
 
 fn get_top_folders<R>(archive_reader: &mut ZipArchive<R>) -> Result<HashSet<String>, InstallError>
@@ -28,25 +24,34 @@ where
 }
 
 fn find_install_folder_via_registry() -> Option<String> {
-    let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
-    let software = hklm
-        .open_subkey_with_flags("SOFTWARE\\ARM", KEY_READ | KEY_WOW64_32KEY)
-        .ok()?;
+    #[cfg(target_os = "windows")]
+    {
+        use winreg::enums::*;
+        use winreg::RegKey;
+        let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
+        let software = hklm
+            .open_subkey_with_flags("SOFTWARE\\ARM", KEY_READ | KEY_WOW64_32KEY)
+            .ok()?;
 
-    software
-        .enum_keys()
-        .filter_map(|result| result.ok())
-        .find_map(|key| {
-            if key.contains("arm-none-eabi") {
-                let subkey_path = format!("SOFTWARE\\ARM\\{}", key);
-                let subkey = hklm
-                    .open_subkey_with_flags(subkey_path, KEY_READ | KEY_WOW64_32KEY)
-                    .ok()?;
-                subkey.get_value("InstallFolder").ok()
-            } else {
-                None
-            }
-        })
+        software
+            .enum_keys()
+            .filter_map(|result| result.ok())
+            .find_map(|key| {
+                if key.contains("arm-none-eabi") {
+                    let subkey_path = format!("SOFTWARE\\ARM\\{}", key);
+                    let subkey = hklm
+                        .open_subkey_with_flags(subkey_path, KEY_READ | KEY_WOW64_32KEY)
+                        .ok()?;
+                    subkey.get_value("InstallFolder").ok()
+                } else {
+                    None
+                }
+            })
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        None
+    }
 }
 
 pub fn install_arm_embedded_gcc_windows() -> Result<(), InstallError> {

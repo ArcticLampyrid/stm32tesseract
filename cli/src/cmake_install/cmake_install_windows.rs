@@ -5,21 +5,27 @@ use crate::path_env::add_to_path_env;
 use crate::{error::InstallError, gh_helper};
 use tempfile::tempdir;
 
-use winreg::enums::*;
-use winreg::RegKey;
-
 fn find_install_folder_via_registry() -> Option<String> {
-    let hkcu = RegKey::predef(HKEY_LOCAL_MACHINE);
-    let key_path = r"SOFTWARE\Kitware\CMake";
-    let result_native = hkcu
-        .open_subkey_with_flags(key_path, KEY_READ)
-        .and_then(|x| x.get_value("InstallDir"))
-        .ok();
-    let result_wow64 = hkcu
-        .open_subkey_with_flags(key_path, KEY_READ | KEY_WOW64_32KEY)
-        .and_then(|x| x.get_value("InstallDir"))
-        .ok();
-    result_native.or(result_wow64)
+    #[cfg(target_os = "windows")]
+    {
+        use winreg::enums::*;
+        use winreg::RegKey;
+        let hkcu = RegKey::predef(HKEY_LOCAL_MACHINE);
+        let key_path = r"SOFTWARE\Kitware\CMake";
+        let result_native = hkcu
+            .open_subkey_with_flags(key_path, KEY_READ)
+            .and_then(|x| x.get_value("InstallDir"))
+            .ok();
+        let result_wow64 = hkcu
+            .open_subkey_with_flags(key_path, KEY_READ | KEY_WOW64_32KEY)
+            .and_then(|x| x.get_value("InstallDir"))
+            .ok();
+        result_native.or(result_wow64)
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        None
+    }
 }
 
 pub fn install_cmake_windows() -> Result<(), InstallError> {
