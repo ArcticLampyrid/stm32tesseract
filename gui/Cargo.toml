@@ -5,6 +5,7 @@ edition = "2021"
 build = "build.rs"
 
 [dependencies]
+clap = { version = "4.4.6", features = ["derive"] }
 slint = "1.0"
 portable-pty = "0.8.1"
 strip-ansi-escapes = "0.2.0"
@@ -13,6 +14,15 @@ native-dialog = { version = "0.6.4", features = [
     "windows_dpi_awareness",
     "windows_visual_styles",
 ] }
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.51", features = [
+    "Win32_UI_Shell",
+    "Win32_Foundation",
+    "Win32_System_Registry",
+    "Win32_UI_WindowsAndMessaging",
+] }
+check_elevation = "0.2"
 
 [build-dependencies]
 slint-build = "1.0"

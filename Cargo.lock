@@ -71,7 +71,7 @@ dependencies = [
  "arrayvec",
  "once_cell",
  "paste",
- "windows",
+ "windows 0.48.0",
 ]
 
 [[package]]
@@ -707,6 +707,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0ced0551234e87afee12411d535648dd89d2e7f34c78b753395567aff3d447ff"
 dependencies = [
  "libc",
+]
+
+[[package]]
+name = "check_elevation"
+version = "0.2.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "34f7310b71e7b968cdadd13480b9e4f2def9f173f67fd7317e8eddb8d7a4ba00"
+dependencies = [
+ "windows 0.51.1",
 ]
 
 [[package]]
@@ -4345,12 +4354,15 @@ dependencies = [
 name = "stm32tesseract-gui"
 version = "0.1.0"
 dependencies = [
+ "check_elevation",
+ "clap",
  "native-dialog",
  "once_cell",
  "portable-pty",
  "slint",
  "slint-build",
  "strip-ansi-escapes",
+ "windows 0.51.1",
 ]
 
 [[package]]
@@ -5398,6 +5410,25 @@ checksum = "e686886bc078bc1b0b600cac0147aadb815089b6e4da64016cbd754b6342700f"
 dependencies = [
  "windows-implement",
  "windows-interface",
+ "windows-targets 0.48.5",
+]
+
+[[package]]
+name = "windows"
+version = "0.51.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ca229916c5ee38c2f2bc1e9d8f04df975b4bd93f9955dc69fabb5d91270045c9"
+dependencies = [
+ "windows-core",
+ "windows-targets 0.48.5",
+]
+
+[[package]]
+name = "windows-core"
+version = "0.51.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f1f8cf84f35d2db49a46868f947758c7a1138116f7fac3bc844f43ade1292e64"
+dependencies = [
  "windows-targets 0.48.5",
 ]
 

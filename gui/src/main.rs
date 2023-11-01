@@ -1,5 +1,7 @@
 #![windows_subsystem = "windows"]
-
+mod command_params;
+use clap::Parser;
+use command_params::CommandParams;
 use native_dialog::FileDialog;
 use once_cell::sync::Lazy;
 use portable_pty::{native_pty_system, CommandBuilder, ExitStatus, PtySize};
@@ -41,6 +43,59 @@ fn do_env_check(ui_handle: &Weak<AppWindow>) {
 }
 
 fn do_env_up(ui_handle: &Weak<AppWindow>) {
+    #[cfg(target_os = "windows")]
+    if cfg!(not(debug_assertions)) && !check_elevation::is_elevated().unwrap_or(true) {
+        use std::ffi::OsString;
+        use std::os::windows::prelude::OsStrExt;
+        use windows::{
+            core::PCWSTR,
+            Win32::{
+                Foundation::{HANDLE, HINSTANCE, HWND},
+                System::Registry::HKEY,
+                UI::Shell::{ShellExecuteExW, SEE_MASK_NOASYNC, SHELLEXECUTEINFOW},
+                UI::WindowsAndMessaging::SW_NORMAL,
+            },
+        };
+        let verb_wstr: [u16; 6] = [
+            'r' as u16, 'u' as u16, 'n' as u16, 'a' as u16, 's' as u16, 0,
+        ];
+        let file_wstr = std::env::current_exe()
+            .unwrap()
+            .as_os_str()
+            .encode_wide()
+            .chain(Some(0))
+            .collect::<Vec<_>>();
+        let parameters_wstr = OsString::from("env up")
+            .encode_wide()
+            .chain(Some(0))
+            .collect::<Vec<_>>();
+        let mut sei = SHELLEXECUTEINFOW {
+            cbSize: std::mem::size_of::<SHELLEXECUTEINFOW>() as u32,
+            fMask: SEE_MASK_NOASYNC,
+            hwnd: HWND::default(),
+            lpVerb: PCWSTR(verb_wstr.as_ptr()),
+            lpFile: PCWSTR(file_wstr.as_ptr()),
+            lpParameters: PCWSTR(parameters_wstr.as_ptr()),
+            lpDirectory: PCWSTR::null(),
+            nShow: SW_NORMAL.0,
+            hInstApp: HINSTANCE::default(),
+            lpIDList: std::ptr::null_mut(),
+            lpClass: PCWSTR::null(),
+            hkeyClass: HKEY::default(),
+            dwHotKey: 0,
+            hProcess: HANDLE::default(),
+            ..Default::default()
+        };
+        let result = unsafe { ShellExecuteExW(&mut sei) };
+        if let Err(err) = result {
+            let _ = ui_handle.upgrade_in_event_loop(move |ui| {
+                ui.set_output(format!("Failed to elevate: {}\n", err).into());
+            });
+            return;
+        }
+        std::process::exit(0);
+    }
+
     let mut cmd = CommandBuilder::new(PATH_OF_CLI.as_os_str());
     cmd.arg("env");
     cmd.arg("up");
@@ -93,7 +148,22 @@ fn main() -> Result<(), slint::PlatformError> {
         }
     });
 
-    do_env_check(&ui.as_weak());
+    let mut do_env_check_on_startup = true;
+
+    if let Ok(cmd) = CommandParams::try_parse() {
+        match cmd.command {
+            command_params::Commands::Env { command } => match command {
+                command_params::EnvCommands::Up {} => {
+                    do_env_check_on_startup = false;
+                    do_env_up(&ui.as_weak());
+                }
+            },
+        }
+    }
+
+    if do_env_check_on_startup {
+        do_env_check(&ui.as_weak());
+    }
 
     ui.run()
 }
