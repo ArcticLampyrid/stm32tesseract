@@ -18,6 +18,8 @@
     <configurations>
       <configuration PROFILE_NAME="gcc - release" ENABLED="true" FROM_PRESET="true" GENERATION_DIR="./build" />
       <configuration PROFILE_NAME="gcc - debug" ENABLED="true" FROM_PRESET="true" GENERATION_DIR="./build" />
+      <configuration PROFILE_NAME="gcc - min_size_rel" ENABLED="true" FROM_PRESET="true" GENERATION_DIR="./build" />
+      <configuration PROFILE_NAME="gcc - rel_with_deb_info" ENABLED="true" FROM_PRESET="true" GENERATION_DIR="./build" />
       <configuration PROFILE_NAME="gcc" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="./build" />
     </configurations>
   </component>
