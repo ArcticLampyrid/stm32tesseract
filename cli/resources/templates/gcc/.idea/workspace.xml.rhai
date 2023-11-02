@@ -14,6 +14,7 @@
       <config projectName="${info.project_name}" targetName="${info.project_name}.elf" />
     </generated>
   </component>
+  <component name="RunManager" selected="OpenOCD Download &amp; Run.OCD ${info.project_name}" />
   <component name="CMakeSettings">
     <configurations>
       <configuration PROFILE_NAME="gcc - release" ENABLED="true" FROM_PRESET="true" GENERATION_DIR="./build" />
