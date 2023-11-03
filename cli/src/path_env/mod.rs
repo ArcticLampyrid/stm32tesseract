@@ -17,6 +17,6 @@ pub fn add_to_path_env(_new_item: &str) -> std::io::Result<()> {
 }
 
 #[cfg(not(target_os = "windows"))]
-pub fn get_path_env(_new_item: &str) -> Option<OsString> {
+pub fn get_path_env() -> Option<std::ffi::OsString> {
     std::env::var_os("PATH")
 }
