@@ -36,7 +36,7 @@ _Note: Administrator privileges may be required._
 
 _Reminders:_
 - **Refrain from using the launch button on CMake Tools' status bar due to potential issues.**
-- 
+
 #### Debugging
 1. Open the Run and Debug Panel.
 2. Select either `Debug (OpenOCD)` or `Debug (JLink)`.
