@@ -5,12 +5,14 @@ STM32Tesseract is a utility designed to seamlessly integrate STM32CubeMX-generat
 ### CLI
 This is the command-line interface designed for STM32Tesseract, allowing for direct and scriptable control via terminal commands.
 
-<img style="float: right;" src="https://cdn.jsdelivr.net/gh/slint-ui/slint/logo/madewithslint/madewithslint-logo-dark/madewithslint-logo-dark.svg" alt="GUI is made with Slint.">
+<div>
+
+<img align="right" src="https://cdn.jsdelivr.net/gh/slint-ui/slint/logo/madewithslint/madewithslint-logo-dark/madewithslint-logo-dark.svg" alt="GUI is made with Slint.">
 
 ### GUI
 This graphical user interface encapsulates the CLI functionality, offering a more user-friendly and visually intuitive interaction with STM32Tesseract.
 
-<div style="clear: both;">
+</div>
 
 ## Motivation
 While STM32CubeMX is an excellent tool for initializing STM32 projects, it often falls short in supporting modern, user-friendly toolchains. STM32Tesseract aims to bridge this gap, enhancing the development experience by facilitating integration with advanced IDEs and build systems.
