@@ -1,0 +1,46 @@
+name: Deploy
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  deploy-win:
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install NSIS
+      shell: pwsh
+      run: |
+        Invoke-WebRequest -UserAgent "Wget" https://sourceforge.net/projects/nsis/files/NSIS%203/3.09/nsis-3.09-setup.exe/download -OutFile ${{ runner.temp }}\nsis-3.09-setup.exe
+        & "${{ runner.temp }}\nsis-3.09-setup.exe" \S
+        Add-Content -Path $env:GITHUB_PATH -Value "C:\Program Files (x86)\NSIS"
+    - name: Install NSIS EnVar plugin
+      shell: pwsh
+      run: |
+        Invoke-WebRequest https://nsis.sourceforge.io/mediawiki/images/7/7f/EnVar_plugin.zip -OutFile ${{ runner.temp }}\EnVar_plugin.zip
+        Expand-Archive "${{ runner.temp }}\EnVar_plugin.zip" -DestinationPath "C:\Program Files (x86)\NSIS" -Force
+    - name: Build (Release)
+      shell: pwsh
+      run: cargo build --release --verbose
+    - name: Package
+      shell: pwsh
+      run: | 
+        cd win32_installer
+        & "makensis" nsis.nsi
+        $installer_name = "stm32tesseract-" + $env:GITHUB_REF.replace('refs/tags/', '') + "-installer.exe"
+        Rename-Item -Path ./STM32TesseractInstaller.exe -NewName $installer_name
+    - name: Release (GitHub)
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          win32_installer/*.exe
