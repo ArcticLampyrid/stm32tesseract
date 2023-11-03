@@ -22,7 +22,7 @@ While STM32CubeMX is an excellent tool for initializing STM32 projects, it often
 - **CLion Project Setup**: Enables easy configuration of CLion projects.
 
 ## Usage
-For detailed instructions, refer to the [Tutorial](Tutorial.md).
+For detailed instructions, refer to the [Tutorial](https://github.com/ArcticLampyrid/stm32tesseract/blob/main/docs/Tutorial.md).
 
 ## Build
 *Note: The following instructions are intended solely for STM32Tesseract developers.*
@@ -30,4 +30,4 @@ For detailed instructions, refer to the [Tutorial](Tutorial.md).
 STM32Tesseract utilizes Cargo as its build system. To build the project, execute `cargo build` in the root directory of the project.
 
 ## License
-STM32Tesseract is licensed under the [BSD 3-Clause License](../LICENSE.md).
+STM32Tesseract is licensed under the [BSD 3-Clause License](https://github.com/ArcticLampyrid/stm32tesseract/blob/main/LICENSE.md).

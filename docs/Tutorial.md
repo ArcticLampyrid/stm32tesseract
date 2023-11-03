@@ -54,7 +54,7 @@ For first-time users of CLion:
 1. Access `File > Settings` or use the shortcut `Ctrl + Alt + S`.
 2. Go to `Build, Execution, Deployment > Embedded Development`.
 3. Define the paths for the OpenOCD executable and STM32CubeMX executable.  
-   ![Illustration: Setting up OpenOCD and STM32CubeMX](ClionEmbeddedDevelopmentSettings.png)
+   ![Illustration: Setting up OpenOCD and STM32CubeMX](CLionEmbeddedDevelopmentSettings.png)
 4. Click `Apply` and then `OK`.
 
 #### Building the Project
