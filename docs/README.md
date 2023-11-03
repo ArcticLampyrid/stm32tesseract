@@ -28,3 +28,6 @@ For detailed instructions, refer to the [Tutorial](Tutorial.md).
 *Note: The following instructions are intended solely for STM32Tesseract developers.*
 
 STM32Tesseract utilizes Cargo as its build system. To build the project, execute `cargo build` in the root directory of the project.
+
+## License
+STM32Tesseract is licensed under the [BSD 3-Clause License](../LICENSE.md).
