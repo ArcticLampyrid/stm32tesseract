@@ -15,3 +15,8 @@ pub fn add_to_path_env(_new_item: &str) -> std::io::Result<()> {
         "Not implemented on this platform",
     ))
 }
+
+#[cfg(not(target_os = "windows"))]
+pub fn get_path_env(_new_item: &str) -> Option<OsString> {
+    std::env::var_os("PATH")
+}

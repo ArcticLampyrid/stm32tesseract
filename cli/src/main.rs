@@ -9,12 +9,10 @@ mod ninja_install;
 mod openocd_install;
 mod path_env;
 mod simple_template;
-
-use std::{fs, path::PathBuf};
-
 use clap::{Parser, Subcommand};
 use error::InstallError;
-use which::which_global;
+use std::{ffi::OsStr, fs, path::PathBuf};
+use which::which_in_global;
 
 use crate::{
     arm_embedded_gcc_install::install_arm_embedded_gcc, cmake_install::install_cmake,
@@ -49,9 +47,14 @@ enum EnvCommands {
     Up {},
 }
 
-fn check_tool(name: &str, command: &str) -> bool {
+fn check_tool<U>(name: &str, command: &str, path_var: Option<U>) -> bool
+where
+    U: AsRef<OsStr>,
+{
     println!("====== {} ======", name);
-    match which_global(command) {
+    match which_in_global(command, path_var)
+        .and_then(|mut i| i.next().ok_or(which::Error::CannotFindBinaryPath))
+    {
         Ok(path) => {
             println!("Found: {}", path.display());
             true
@@ -63,12 +66,20 @@ fn check_tool(name: &str, command: &str) -> bool {
     }
 }
 
-fn check_and_install<I>(name: &str, command: &str, install: I) -> Result<(), InstallError>
+fn check_and_install<I, U>(
+    name: &str,
+    command: &str,
+    install: I,
+    path_var: Option<U>,
+) -> Result<(), InstallError>
 where
     I: FnOnce() -> Result<(), InstallError>,
+    U: AsRef<OsStr>,
 {
     println!("====== {} ======", name);
-    match which_global(command) {
+    match which_in_global(command, path_var)
+        .and_then(|mut i| i.next().ok_or(which::Error::CannotFindBinaryPath))
+    {
         Ok(path) => {
             println!("Found: {}", path.display());
             Ok(())
@@ -95,11 +106,16 @@ where
 }
 
 fn command_env_check() {
+    let path_var = path_env::get_path_env();
     let mut okey = true;
-    okey &= check_tool("Ninja", "ninja");
-    okey &= check_tool("OpenOCD", "openocd");
-    okey &= check_tool("GNU Arm Embedded GCC", "arm-none-eabi-gcc");
-    okey &= check_tool("CMake", "cmake");
+    okey &= check_tool("Ninja", "ninja", path_var.as_ref());
+    okey &= check_tool("OpenOCD", "openocd", path_var.as_ref());
+    okey &= check_tool(
+        "GNU Arm Embedded GCC",
+        "arm-none-eabi-gcc",
+        path_var.as_ref(),
+    );
+    okey &= check_tool("CMake", "cmake", path_var.as_ref());
     println!("====== Conclusion ======");
     if okey {
         println!("All good");
@@ -110,16 +126,18 @@ fn command_env_check() {
 }
 
 fn command_env_up() {
+    let path_var = path_env::get_path_env();
     let mut okey = true;
-    okey &= check_and_install("Ninja", "ninja", install_ninja).is_ok();
-    okey &= check_and_install("OpenOCD", "openocd", install_openocd).is_ok();
+    okey &= check_and_install("Ninja", "ninja", install_ninja, path_var.as_ref()).is_ok();
+    okey &= check_and_install("OpenOCD", "openocd", install_openocd, path_var.as_ref()).is_ok();
     okey &= check_and_install(
         "GNU Arm Embedded GCC",
         "arm-none-eabi-gcc",
         install_arm_embedded_gcc,
+        path_var.as_ref(),
     )
     .is_ok();
-    okey &= check_and_install("CMake", "cmake", install_cmake).is_ok();
+    okey &= check_and_install("CMake", "cmake", install_cmake, path_var.as_ref()).is_ok();
     println!("====== Conclusion ======");
     if okey {
         println!("All good");
