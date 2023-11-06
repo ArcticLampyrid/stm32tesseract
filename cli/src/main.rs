@@ -31,19 +31,24 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    /// Manage environment
     Env {
         #[command(subcommand)]
         command: EnvCommands,
     },
+    /// Generate modern project from *.cproject file
     Tesseract {
         #[clap(short, long)]
+        /// *.cproject file
         file: String,
     },
 }
 
 #[derive(Subcommand)]
 enum EnvCommands {
+    /// Check environment
     Check {},
+    /// Set up environment
     Up {},
 }
 
