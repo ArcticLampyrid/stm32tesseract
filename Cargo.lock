@@ -4320,6 +4320,7 @@ dependencies = [
  "regex",
  "reqwest",
  "rhai",
+ "semver",
  "serde",
  "serde_json",
  "sxd-document",
