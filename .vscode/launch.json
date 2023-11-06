@@ -4,7 +4,7 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "stm32tesseract up",
+            "name": "stm32tesseract env up",
             "cargo": {
                 "args": [
                     "build",
@@ -17,6 +17,7 @@
                 }
             },
             "args": [
+                "env",
                 "up"
             ],
             "cwd": "${workspaceFolder}"
