@@ -13,6 +13,8 @@ use std::{
 
 slint::include_modules!();
 
+const CARGO_PKG_VERSION: Option<&'static str> = option_env!("CARGO_PKG_VERSION");
+
 static PATH_OF_CLI: Lazy<PathBuf> = Lazy::new(|| {
     let mut path_of_cli = std::env::current_exe().expect("Failed to get current exe path");
     path_of_cli.pop();
@@ -115,6 +117,10 @@ fn do_env_up(ui_handle: &Weak<AppWindow>) {
 
 fn main() -> Result<(), slint::PlatformError> {
     let ui = AppWindow::new()?;
+
+    if let Some(version_name) = CARGO_PKG_VERSION {
+        ui.set_version_name(version_name.into());
+    }
 
     let ui_handle = ui.as_weak();
     ui.on_env_up(move || {
