@@ -22,5 +22,6 @@
         "debug": {
             "statusBarVisibility": "hidden"
         }
-    }
+    },
+    "debug.showInStatusBar": "always"
 }
