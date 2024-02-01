@@ -5,5 +5,22 @@
     "files.associations": {
         "Drivers/**.c": "c",
         "Drivers/**.h": "c"
+    },
+    "cmake.options.advanced": {
+        "build": {
+            "statusBarVisibility": "visible"
+        },
+        "configurePreset": {
+            "statusBarVisibility": "visible"
+        },
+        "buildPreset": {
+            "statusBarVisibility": "visible"
+        },
+        "launch": {
+            "statusBarVisibility": "hidden"
+        },
+        "debug": {
+            "statusBarVisibility": "hidden"
+        }
     }
 }
