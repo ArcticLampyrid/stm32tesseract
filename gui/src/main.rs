@@ -145,12 +145,19 @@ fn main() -> Result<(), slint::PlatformError> {
     ui.on_select_cproject(move || {
         let path = FileDialog::new()
             .add_filter("CProject File", &["cproject"])
-            .show_open_single_file()
-            .unwrap();
-        if let Some(path) = path {
-            ui_handle
-                .unwrap()
-                .set_cproject_path(path.to_string_lossy().as_ref().into());
+            .show_open_single_file();
+        match path {
+            Ok(Some(path)) => {
+                ui_handle
+                    .unwrap()
+                    .set_cproject_path(path.to_string_lossy().as_ref().into());
+            }
+            Err(err) => {
+                ui_handle
+                    .unwrap()
+                    .set_output(format!("Failed to open file dialog: {}\n", err).into());
+            }
+            _ => {}
         }
     });
 
