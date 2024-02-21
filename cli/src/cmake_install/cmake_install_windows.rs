@@ -2,6 +2,7 @@ use std::env;
 use std::path::PathBuf;
 
 use crate::path_env::add_to_path_env;
+use crate::reqwest_unified_builder;
 use crate::{error::InstallError, gh_helper};
 use tempfile::tempdir;
 
@@ -49,9 +50,7 @@ pub fn install_cmake_windows() -> Result<(), InstallError> {
     };
     let cmake_installer_suffix = format!("-windows-{}.msi", cmake_arch_suffix);
 
-    let client = reqwest::blocking::ClientBuilder::new()
-        .user_agent("cmake-installer")
-        .build()?;
+    let client = reqwest_unified_builder::build_blocking()?;
     let url_for_cmake_msi = gh_helper::get_latest_release_url_with_fallback(
         &client,
         "Kitware",
@@ -63,7 +62,7 @@ pub fn install_cmake_windows() -> Result<(), InstallError> {
         )
         .as_str(),
     );
-    let url_for_cmake_msi = format!("https://ghproxy.com/{}", url_for_cmake_msi);
+    let url_for_cmake_msi = gh_helper::elect_mirror(url_for_cmake_msi);
 
     println!("Downloading {}", url_for_cmake_msi);
     let mut response = client.get(url_for_cmake_msi).send()?;

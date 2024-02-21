@@ -1,11 +1,8 @@
-use crate::{error::InstallError, gh_helper, path_env::add_to_path_env};
+use crate::{error::InstallError, gh_helper, path_env::add_to_path_env, reqwest_unified_builder};
 use tar::Archive;
 
 pub fn install_openocd_windows() -> Result<(), InstallError> {
-    let client = reqwest::blocking::ClientBuilder::new()
-        .user_agent("openocd-installer")
-        .build()
-        .map_err(InstallError::HttpFetchFailed)?;
+    let client = reqwest_unified_builder::build_blocking()?;
     let url_for_openocd_win_tgz = gh_helper::get_latest_release_url_with_fallback(
         &client,
         "openocd-org",
@@ -14,7 +11,7 @@ pub fn install_openocd_windows() -> Result<(), InstallError> {
         "https://github.com/openocd-org/openocd/releases/download/v0.12.0/openocd-v0.12.0-i686-w64-mingw32.tar.gz",
     );
 
-    let url_for_openocd_win_tgz = format!("https://ghproxy.com/{}", url_for_openocd_win_tgz);
+    let url_for_openocd_win_tgz = gh_helper::elect_mirror(url_for_openocd_win_tgz);
     println!("Downloading {}", url_for_openocd_win_tgz);
     let response = client.get(url_for_openocd_win_tgz).send()?;
     if !response.status().is_success() {

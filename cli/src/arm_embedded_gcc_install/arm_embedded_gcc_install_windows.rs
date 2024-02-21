@@ -1,4 +1,4 @@
-use crate::{error::InstallError, gh_helper, path_env::add_to_path_env};
+use crate::{error::InstallError, gh_helper, path_env::add_to_path_env, reqwest_unified_builder};
 use std::{collections::HashSet, env, io::Seek, path::PathBuf};
 use tempfile::tempfile;
 use zip::ZipArchive;
@@ -70,9 +70,7 @@ pub fn install_arm_embedded_gcc_windows() -> Result<(), InstallError> {
         return Ok(());
     }
 
-    let client = reqwest::blocking::ClientBuilder::new()
-        .user_agent("arm-embedded-gcc-installer")
-        .build()?;
+    let client = reqwest_unified_builder::build_blocking()?;
     let url_for_gcc_zip = gh_helper::get_latest_release_url_with_fallback(
         &client,
         "xpack-dev-tools",
@@ -80,7 +78,7 @@ pub fn install_arm_embedded_gcc_windows() -> Result<(), InstallError> {
         |assert_name| assert_name.ends_with("-win32-x64.zip"),
         "https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v12.3.1-1.1/xpack-arm-none-eabi-gcc-12.3.1-1.1-win32-x64.zip",
     );
-    let url_for_gcc_zip = format!("https://ghproxy.com/{}", url_for_gcc_zip);
+    let url_for_gcc_zip = gh_helper::elect_mirror(url_for_gcc_zip);
 
     println!("Downloading {}", url_for_gcc_zip);
     let mut response = client.get(url_for_gcc_zip).send()?;

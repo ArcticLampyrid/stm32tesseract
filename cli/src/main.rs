@@ -8,6 +8,7 @@ mod gh_helper;
 mod ninja_install;
 mod openocd_install;
 mod path_env;
+mod reqwest_unified_builder;
 mod simple_template;
 use clap::{Parser, Subcommand};
 use error::InstallError;

@@ -1,4 +1,6 @@
 use crate::error::InstallError;
+mod mirror_election;
+pub use mirror_election::elect_mirror;
 
 pub fn get_latest_release_url<F>(
     client: &reqwest::blocking::Client,
