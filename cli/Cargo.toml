@@ -2,6 +2,8 @@
 name = "stm32tesseract"
 version = "0.1.1"
 edition = "2021"
+authors = ["ArcticLampyrid <ArcticLampyrid@outlook.com>"]
+license = "BSD-3-Clause"
 
 [dependencies]
 clap = { version = "4.4.6", features = ["derive"] }
@@ -27,3 +29,18 @@ semver = "1.0"
 
 [target.'cfg(windows)'.dependencies]
 winreg = "0.51.0"
+
+[package.metadata.deb]
+depends = []
+assets = [
+    [
+        "target/release/stm32tesseract",
+        "usr/bin/",
+        "755",
+    ],
+    [
+        "resources/**/*",
+        "var/lib/stm32tesseract/resources",
+        "644",
+    ],
+]

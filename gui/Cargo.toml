@@ -3,6 +3,8 @@ name = "stm32tesseract-gui"
 version = "0.1.1"
 edition = "2021"
 build = "build.rs"
+authors = ["ArcticLampyrid <ArcticLampyrid@outlook.com>"]
+license = "BSD-3-Clause"
 
 [dependencies]
 clap = { version = "4.4.6", features = ["derive"] }
@@ -24,3 +26,6 @@ check_elevation = "0.2"
 [build-dependencies]
 slint-build = "1.0"
 embed-resource = "2.3"
+
+[package.metadata.deb]
+depends = ["stm32tesseract"]
