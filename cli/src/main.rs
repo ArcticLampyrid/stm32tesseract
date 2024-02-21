@@ -9,6 +9,7 @@ mod ninja_install;
 mod openocd_install;
 mod path_env;
 mod reqwest_unified_builder;
+mod resources_dir;
 mod simple_template;
 use clap::{Parser, Subcommand};
 use error::InstallError;

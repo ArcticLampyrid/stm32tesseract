@@ -2,7 +2,7 @@ use regex::Regex;
 use rhai::serde::to_dynamic;
 use serde::{Deserialize, Serialize};
 use std::{
-    env, fs, io,
+    fs, io,
     path::{Path, PathBuf},
 };
 
@@ -15,23 +15,14 @@ struct FilterInfo {
     #[serde(default)]
     overwrite: bool,
 }
-use crate::cproject_reader::CProjectInfo;
+use crate::{cproject_reader::CProjectInfo, resources_dir::get_resources_path};
 
 pub struct CMakeProjectGeneratorParams<'a> {
     pub info: &'a CProjectInfo,
 }
 
 fn get_cmake_project_template_path() -> io::Result<PathBuf> {
-    let mut path = env::current_exe()?;
-    path.pop(); // File name
-    if cfg!(debug_assertions) {
-        path.pop(); // Debug folder
-        path.pop(); // Target folder
-        path.push("cli");
-    } else {
-        path.pop(); // Bin folder
-    }
-    path.push("resources");
+    let mut path = get_resources_path()?;
     path.push("templates");
     path.push("gcc");
     Ok(path)

@@ -23,7 +23,15 @@ static PATH_OF_CLI: Lazy<PathBuf> = Lazy::new(|| {
     } else {
         path_of_cli.push("stm32tesseract");
     }
-    path_of_cli
+    if path_of_cli.exists() {
+        return path_of_cli;
+    }
+
+    if cfg!(target_os = "windows") {
+        PathBuf::from("stm32tesseract.exe")
+    } else {
+        PathBuf::from("stm32tesseract")
+    }
 });
 
 fn do_env_check(ui_handle: &Weak<AppWindow>) {
