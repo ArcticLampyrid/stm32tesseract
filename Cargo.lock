@@ -4312,7 +4312,7 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 
 [[package]]
 name = "stm32tesseract"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "clap",
  "flate2",
@@ -4335,7 +4335,7 @@ dependencies = [
 
 [[package]]
 name = "stm32tesseract-gui"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "check_elevation",
  "clap",
