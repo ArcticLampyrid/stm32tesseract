@@ -106,7 +106,22 @@ fn do_env_up(ui_handle: &Weak<AppWindow>) {
         std::process::exit(0);
     }
 
-    let mut cmd = CommandBuilder::new(PATH_OF_CLI.as_os_str());
+    let mut cmd: CommandBuilder = 'b: {
+        #[cfg(unix)]
+        if unsafe { libc::getuid() } != 0 {
+            if which::which("lxqt-sudo").is_ok() {
+                let mut cmd = CommandBuilder::new("lxqt-sudo");
+                cmd.arg(PATH_OF_CLI.as_os_str());
+                break 'b cmd;
+            }
+            if which::which("pkexec").is_ok() {
+                let mut cmd = CommandBuilder::new("pkexec");
+                cmd.arg(PATH_OF_CLI.as_os_str());
+                break 'b cmd;
+            }
+        }
+        break 'b CommandBuilder::new(PATH_OF_CLI.as_os_str());
+    };
     cmd.arg("env");
     cmd.arg("up");
     let ui_handle_2 = ui_handle.clone();

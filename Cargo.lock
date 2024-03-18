@@ -4344,12 +4344,14 @@ dependencies = [
  "check_elevation",
  "clap",
  "embed-resource",
+ "libc",
  "native-dialog",
  "once_cell",
  "portable-pty",
  "slint",
  "slint-build",
  "strip-ansi-escapes",
+ "which 6.0.0",
  "windows 0.51.1",
 ]
 
