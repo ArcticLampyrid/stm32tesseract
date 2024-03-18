@@ -7,7 +7,7 @@ license = "BSD-3-Clause"
 
 [dependencies]
 clap = { version = "4.4.6", features = ["derive"] }
-which = "5.0.0"
+which = "6.0.0"
 thiserror = "1.0"
 reqwest = { version = "0.11.22", default-features = false, features = [
     "blocking",
