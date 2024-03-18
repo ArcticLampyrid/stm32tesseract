@@ -8,6 +8,7 @@ mod gh_helper;
 mod ninja_install;
 mod openocd_install;
 mod path_env;
+mod pkg_manager;
 mod reqwest_unified_builder;
 mod resources_dir;
 mod simple_template;
