@@ -2,9 +2,9 @@
 mod command_params;
 use clap::Parser;
 use command_params::CommandParams;
-use native_dialog::FileDialog;
 use once_cell::sync::Lazy;
 use portable_pty::{native_pty_system, CommandBuilder, ExitStatus, PtySize};
+use rfd::FileDialog;
 use slint::Weak;
 use std::{
     io::{BufRead, BufReader},
@@ -168,19 +168,11 @@ fn main() -> Result<(), slint::PlatformError> {
     ui.on_select_cproject(move || {
         let path = FileDialog::new()
             .add_filter("CProject File", &["cproject"])
-            .show_open_single_file();
-        match path {
-            Ok(Some(path)) => {
-                ui_handle
-                    .unwrap()
-                    .set_cproject_path(path.to_string_lossy().as_ref().into());
-            }
-            Err(err) => {
-                ui_handle
-                    .unwrap()
-                    .set_output(format!("Failed to open file dialog: {}\n", err).into());
-            }
-            _ => {}
+            .pick_file();
+        if let Some(path) = path {
+            ui_handle
+                .unwrap()
+                .set_cproject_path(path.to_string_lossy().as_ref().into());
         }
     });
 
