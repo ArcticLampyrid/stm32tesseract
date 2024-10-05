@@ -1,6 +1,6 @@
 [package]
 name = "stm32tesseract"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 authors = ["ArcticLampyrid <ArcticLampyrid@outlook.com>"]
 license = "BSD-3-Clause"
