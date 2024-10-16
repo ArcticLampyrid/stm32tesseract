@@ -167,7 +167,7 @@ fn main() -> Result<(), slint::PlatformError> {
     let ui_handle = ui.as_weak();
     ui.on_select_cproject(move || {
         let path = FileDialog::new()
-            .add_filter("CProject File", &["cproject"])
+            .add_filter("STM32CubeIDE Project", &["cproject", "ioc"])
             .pick_file();
         if let Some(path) = path {
             ui_handle
