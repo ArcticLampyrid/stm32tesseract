@@ -15,9 +15,10 @@ function(setup_arm_embeded_gcc_toolchain mcpu float_abi fpu)
     set(CMAKE_EXECUTABLE_SUFFIX ".elf" PARENT_SCOPE)
     set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY PARENT_SCOPE)
 
-    set(CMAKE_C_FLAGS "-mfloat-abi=${float_abi} -mfpu=${fpu} -mcpu=${mcpu} -mthumb -mthumb-interwork -ffunction-sections -fdata-sections -fno-common -fmessage-length=0" PARENT_SCOPE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -fno-rtti -fno-exceptions -fno-threadsafe-statics" PARENT_SCOPE)
-    set(CMAKE_ASM_FLAGS "${CMAKE_C_FLAGS} -x assembler-with-cpp" PARENT_SCOPE)
+    set(__common_flags "-mfloat-abi=${float_abi} -mfpu=${fpu} -mcpu=${mcpu} -mthumb -mthumb-interwork -ffunction-sections -fdata-sections -fno-common -fmessage-length=0")
+    set(CMAKE_C_FLAGS "${__common_flags}" PARENT_SCOPE)
+    set(CMAKE_CXX_FLAGS "${__common_flags} -fno-rtti -fno-exceptions -fno-threadsafe-statics" PARENT_SCOPE)
+    set(CMAKE_ASM_FLAGS "${__common_flags} -x assembler-with-cpp" PARENT_SCOPE)
     set(CMAKE_EXE_LINKER_FLAGS "-mcpu=${mcpu} -mthumb -mthumb-interwork -mfpu=${fpu} -mfloat-abi=${float_abi} -specs=nano.specs -Wl,--gc-sections -u _printf_float" PARENT_SCOPE)
 
     set(CMAKE_C_FLAGS_DEBUG "-Og -g" PARENT_SCOPE)
