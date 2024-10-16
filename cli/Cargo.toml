@@ -1,6 +1,6 @@
 [package]
 name = "stm32tesseract"
-version = "0.1.2"
+version = "0.1.4"
 edition = "2021"
 authors = ["ArcticLampyrid <ArcticLampyrid@outlook.com>"]
 license = "BSD-3-Clause"
@@ -17,14 +17,14 @@ reqwest = { version = "0.12", default-features = false, features = [
 ] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1.0"
-zip = "0.6.6"
-tar = "0.4.40"
-flate2 = "1.0.28"
-tempfile = "3.8.0"
+zip = "2"
+tar = "0.4"
+flate2 = "1"
+tempfile = "3"
 sxd-document = "0.3.2"
 sxd-xpath = "0.4.2"
-regex = "1.10.2"
-once_cell = "1.18.0"
+regex = "1.11"
+once_cell = "1.20"
 rhai = { version = "1", features = ["serde"] }
 semver = "1.0"
 
