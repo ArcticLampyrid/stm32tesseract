@@ -34,11 +34,11 @@ fn get_mirror_type() -> MirrorType {
             {
                 // check if ghproxy is available
                 let response = client
-                    .get("https://mirror.ghproxy.com/")
+                    .get("https://ghp.ci/")
                     .timeout(Duration::from_secs(10))
                     .send();
                 if let Ok(response) = response {
-                    if response.status().is_success() {
+                    if response.status().is_success() || response.status().is_redirection() {
                         return MirrorType::GhProxy;
                     }
                 }
@@ -57,11 +57,11 @@ pub fn elect_mirror(url: String) -> String {
     if mirror_type == MirrorType::GhProxy {
         if url.contains("://github.com/") && url.contains("/releases/download/") {
             // release download url
-            return format!("https://mirror.ghproxy.com/{}", url);
+            return format!("https://ghp.ci/{}", url);
         }
         if url.contains("://raw.githubusercontent.com/") {
             // raw content url
-            return format!("https://mirror.ghproxy.com/{}", url);
+            return format!("https://ghp.ci/{}", url);
         }
     }
     url
