@@ -17,8 +17,12 @@ where
         let response_data: serde_json::Value = response.json()?;
         if let Some(releases_data) = response_data.as_array() {
             for release_data in releases_data.iter() {
+                if release_data["prerelease"].as_bool() == Some(true) {
+                    // Skip pre-release
+                    continue;
+                }
                 if let Some(asserts_data) = release_data["assets"].as_array() {
-                    let url_for_ninja_win_zip = asserts_data.iter().find_map(|assert_data| {
+                    let url_target_asset = asserts_data.iter().find_map(|assert_data| {
                         if let Some(assert_name) = assert_data["name"].as_str() {
                             if filter(assert_name) {
                                 return assert_data["browser_download_url"].as_str();
@@ -26,8 +30,8 @@ where
                         }
                         None
                     });
-                    if let Some(url_for_ninja_win_zip) = url_for_ninja_win_zip {
-                        return Ok(url_for_ninja_win_zip.to_string());
+                    if let Some(url_target_asset) = url_target_asset {
+                        return Ok(url_target_asset.to_string());
                     }
                 }
             }
