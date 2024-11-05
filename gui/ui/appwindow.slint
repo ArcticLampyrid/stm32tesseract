@@ -13,6 +13,10 @@ export component AppWindow inherits Window {
     callback env-up();
     callback select-cproject();
     callback act();
+    public function output-scroll-to-end() {
+        output-box-1.viewport-y = min(0px, - output-box-1.viewport-height + output-box-1.visible-height);
+        output-box-2.viewport-y = min(0px, - output-box-2.viewport-height + output-box-2.visible-height);
+    }
     TabWidget {
         Tab {
             title: "Environment";
@@ -50,7 +54,7 @@ export component AppWindow inherits Window {
                     text: "Output:";
                     vertical-alignment: center;
                 }
-                TextEdit {
+                output-box-1 := TextEdit {
                     horizontal-stretch: 1;
                     vertical-stretch: 1;
                     read-only: true;
@@ -98,7 +102,7 @@ export component AppWindow inherits Window {
                     text: "Output:";
                     vertical-alignment: center;
                 }
-                TextEdit {
+                output-box-2 := TextEdit {
                     horizontal-stretch: 1;
                     vertical-stretch: 1;
                     read-only: true;

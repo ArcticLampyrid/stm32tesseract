@@ -250,6 +250,7 @@ where
                         let mut output = ui.get_output();
                         output.push_str(strip_ansi_escapes::strip_str(next_line).as_str());
                         ui.set_output(output);
+                        ui.invoke_output_scroll_to_end();
                     });
                 }
                 Err(e) => {
@@ -257,6 +258,7 @@ where
                         let mut output = ui.get_output();
                         output.push_str(format!("// Failed to read line: {}\n", e).as_str());
                         ui.set_output(output);
+                        ui.invoke_output_scroll_to_end();
                     });
                     break;
                 }
@@ -271,6 +273,7 @@ where
                 let mut output = ui.get_output();
                 output.push_str(format!("// Failed to spawn process: {}\n", e).as_str());
                 ui.set_output(output);
+                ui.invoke_output_scroll_to_end();
             }
 
             on_complete(&ExitStatus::with_exit_code(1));
