@@ -1,10 +1,11 @@
-use std::env;
-use std::path::PathBuf;
+use scopeguard::defer;
 
+use crate::download_manager::download_file;
 use crate::path_env::add_to_path_env;
 use crate::reqwest_unified_builder;
 use crate::{error::InstallError, gh_helper};
-use tempfile::tempdir;
+use std::env;
+use std::path::PathBuf;
 
 fn find_install_folder_via_registry() -> Option<String> {
     #[cfg(target_os = "windows")]
@@ -51,7 +52,7 @@ pub fn install_cmake_windows() -> Result<(), InstallError> {
     let cmake_installer_suffix = format!("-windows-{}.msi", cmake_arch_suffix);
 
     let client = reqwest_unified_builder::build_blocking()?;
-    let url_for_cmake_msi = gh_helper::get_latest_release_url_with_fallback(
+    let url_remote = gh_helper::get_latest_release_url_with_fallback(
         &client,
         "Kitware",
         "CMake",
@@ -62,23 +63,12 @@ pub fn install_cmake_windows() -> Result<(), InstallError> {
         )
         .as_str(),
     );
-    let url_for_cmake_msi = gh_helper::elect_mirror(url_for_cmake_msi);
+    let url_remote = gh_helper::elect_mirror(url_remote);
 
-    println!("Downloading {}", url_for_cmake_msi);
-    let mut response = client.get(url_for_cmake_msi).send()?;
-    if !response.status().is_success() {
-        return Err(InstallError::HttpStatusError(response.status()));
-    }
-
-    let tempdir = tempdir()?;
-    let path_local = {
-        let mut path_local = tempdir.path().to_path_buf();
-        path_local.push("cmake-installer.msi");
-        path_local
-    };
-    {
-        let mut downloaded_msi = std::fs::File::create(path_local.as_path())?;
-        response.copy_to(&mut downloaded_msi)?;
+    println!("Downloading {}", url_remote);
+    let path_local = download_file(&url_remote)?;
+    defer! {
+        let _ = std::fs::remove_file(path_local.as_path());
     }
 
     println!("Installing...");

@@ -3,6 +3,7 @@ mod cmake_install;
 mod cmake_lists_template_expender;
 mod cmake_project_generator;
 mod cproject_reader;
+mod download_manager;
 mod error;
 mod gh_helper;
 mod ninja_install;

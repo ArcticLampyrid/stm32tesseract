@@ -22,6 +22,9 @@ pub enum InstallError {
     ExternalProgramFailed(ExitStatus),
     #[error("invalid zip archive: {0:?}")]
     InvalidZipArchive(#[from] zip::result::ZipError),
+    #[error("DownloadError: {0}")]
+    DownloadError(#[from] crate::download_manager::DownloadError),
     #[error("unknown error")]
+    #[allow(dead_code)]
     UnknownError(),
 }

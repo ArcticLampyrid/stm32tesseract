@@ -1,6 +1,9 @@
-use crate::{error::InstallError, gh_helper, path_env::add_to_path_env, reqwest_unified_builder};
-use std::{collections::HashSet, env, io::Seek, path::PathBuf};
-use tempfile::tempfile;
+use crate::{
+    download_manager::download_file, error::InstallError, gh_helper, path_env::add_to_path_env,
+    reqwest_unified_builder,
+};
+use scopeguard::defer;
+use std::{collections::HashSet, env, fs::File, path::PathBuf};
 use zip::ZipArchive;
 
 fn get_top_folders<R>(archive_reader: &mut ZipArchive<R>) -> Result<HashSet<String>, InstallError>
@@ -71,40 +74,39 @@ pub fn install_arm_embedded_gcc_windows() -> Result<(), InstallError> {
     }
 
     let client = reqwest_unified_builder::build_blocking()?;
-    let url_for_gcc_zip = gh_helper::get_latest_release_url_with_fallback(
+    let url_remote = gh_helper::get_latest_release_url_with_fallback(
         &client,
         "xpack-dev-tools",
         "arm-none-eabi-gcc-xpack",
         |assert_name| assert_name.ends_with("-win32-x64.zip"),
         "https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v12.3.1-1.1/xpack-arm-none-eabi-gcc-12.3.1-1.1-win32-x64.zip",
     );
-    let url_for_gcc_zip = gh_helper::elect_mirror(url_for_gcc_zip);
+    let url_remote = gh_helper::elect_mirror(url_remote);
 
-    println!("Downloading {}", url_for_gcc_zip);
-    let mut response = client.get(url_for_gcc_zip).send()?;
-    if !response.status().is_success() {
-        return Err(InstallError::HttpStatusError(response.status()));
+    println!("Downloading {}", url_remote);
+    let path_local = download_file(&url_remote)?;
+    defer! {
+        let _ = std::fs::remove_file(path_local.as_path());
     }
-    let mut downloaded_zip = tempfile()?;
-    response.copy_to(&mut downloaded_zip)?;
-    downloaded_zip.seek(std::io::SeekFrom::Start(0))?;
 
     println!("Extracting...");
-    let mut zip = ZipArchive::new(downloaded_zip)?;
+    let mut zip = ZipArchive::new(File::open(path_local.as_path())?)?;
     let top_folders = get_top_folders(&mut zip)?;
     if top_folders.len() != 1 {
         return Err(InstallError::MetadataError());
     }
+    let toolchain_name = top_folders.iter().next().unwrap();
+    println!("Toolchain name: {}", toolchain_name);
+
     let system_drive = env::var("SYSTEMDRIVE").unwrap_or("C:".to_string());
     zip.extract(format!("{}\\stm32tesseract_tools", system_drive))
-        .map_err(|_| InstallError::UnknownError())?;
-    let folder_path = format!(
-        "{}\\stm32tesseract_tools\\{}\\bin",
-        system_drive,
-        top_folders.iter().next().unwrap()
-    );
+        .map_err(InstallError::InvalidZipArchive)?;
 
     println!("Setting up environment variables...");
-    add_to_path_env(&folder_path)?;
+    let bin_path = format!(
+        "{}\\stm32tesseract_tools\\{}\\bin",
+        system_drive, toolchain_name
+    );
+    add_to_path_env(&bin_path)?;
     Ok(())
 }

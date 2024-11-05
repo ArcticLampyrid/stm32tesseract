@@ -1,6 +1,10 @@
-use std::env;
+use std::{env, fs::File};
 
-use crate::{error::InstallError, gh_helper, path_env::add_to_path_env, reqwest_unified_builder};
+use crate::{
+    download_manager::download_file, error::InstallError, gh_helper, path_env::add_to_path_env,
+    reqwest_unified_builder,
+};
+use scopeguard::defer;
 use zip::ZipArchive;
 
 pub fn install_ninja_windows() -> Result<(), InstallError> {
@@ -12,17 +16,16 @@ pub fn install_ninja_windows() -> Result<(), InstallError> {
         |assert_name| assert_name == "ninja-win.zip",
         "https://github.com/ninja-build/ninja/releases/download/v1.11.1/ninja-win.zip",
     );
-    let url_for_ninja_win_zip = gh_helper::elect_mirror(url_for_ninja_win_zip);
+    let url_remote = gh_helper::elect_mirror(url_for_ninja_win_zip);
 
-    println!("Downloading {}", url_for_ninja_win_zip);
-    let response = client.get(url_for_ninja_win_zip).send()?;
-    if !response.status().is_success() {
-        return Err(InstallError::HttpStatusError(response.status()));
+    println!("Downloading {}", url_remote);
+    let path_local = download_file(&url_remote)?;
+    defer! {
+        let _ = std::fs::remove_file(path_local.as_path());
     }
-    let content = response.bytes()?;
 
     println!("Extracting...");
-    let mut zip = ZipArchive::new(std::io::Cursor::new(content))?;
+    let mut zip = ZipArchive::new(File::open(path_local.as_path())?)?;
     let mut ninja_exe_in_zip = zip.by_name("ninja.exe")?;
     let system_drive = env::var("SYSTEMDRIVE").unwrap_or("C:".to_string());
     let folder_path = format!("{}\\stm32tesseract_tools\\ninja", system_drive);
