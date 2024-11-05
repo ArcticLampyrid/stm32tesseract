@@ -79,7 +79,7 @@ pub fn install_arm_embedded_gcc_windows() -> Result<(), InstallError> {
         "xpack-dev-tools",
         "arm-none-eabi-gcc-xpack",
         |assert_name| assert_name.ends_with("-win32-x64.zip"),
-        "https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v12.3.1-1.1/xpack-arm-none-eabi-gcc-12.3.1-1.1-win32-x64.zip",
+        "https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v13.3.1-1.1/xpack-arm-none-eabi-gcc-13.3.1-1.1-win32-x64.zip",
     );
     let url_remote = gh_helper::elect_mirror(url_remote);
 

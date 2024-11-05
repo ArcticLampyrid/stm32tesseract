@@ -9,12 +9,22 @@ use zip::ZipArchive;
 
 pub fn install_ninja_windows() -> Result<(), InstallError> {
     let client = reqwest_unified_builder::build_blocking()?;
+    let platform_suffix = match env::consts::ARCH {
+        "x86" => "win",
+        "x86_64" => "win",
+        "aarch64" => "winarm64",
+        _ => return Err(InstallError::ArchNotSupported()),
+    };
     let url_for_ninja_win_zip = gh_helper::get_latest_release_url_with_fallback(
         &client,
         "ninja-build",
         "ninja",
         |assert_name| assert_name == "ninja-win.zip",
-        "https://github.com/ninja-build/ninja/releases/download/v1.11.1/ninja-win.zip",
+        format!(
+            "https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-{}.zip",
+            platform_suffix
+        )
+        .as_str(),
     );
     let url_remote = gh_helper::elect_mirror(url_for_ninja_win_zip);
 

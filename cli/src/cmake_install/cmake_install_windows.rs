@@ -58,7 +58,7 @@ pub fn install_cmake_windows() -> Result<(), InstallError> {
         "CMake",
         |assert_name| assert_name.ends_with(cmake_installer_suffix.as_str()),
         format!(
-            "https://github.com/Kitware/CMake/releases/download/v3.27.7/cmake-3.27.7{}",
+            "https://github.com/Kitware/CMake/releases/download/v3.30.5/cmake-3.30.5{}",
             cmake_installer_suffix
         )
         .as_str(),
