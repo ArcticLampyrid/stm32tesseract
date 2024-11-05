@@ -23,6 +23,10 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+    # Workaround for https://github.com/rust-skia/rust-skia/issues/1049
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12' 
     - uses: actions/checkout@v3
     - name: Build
       run: cargo build --verbose
