@@ -14,7 +14,7 @@ mod resources_dir;
 mod simple_template;
 use clap::{Parser, Subcommand};
 use error::InstallError;
-use std::{ffi::OsStr, fs, path::PathBuf, thread};
+use std::{ffi::OsStr, fs, path::PathBuf, thread, time::Duration};
 use which::which_in_global;
 
 use crate::{
@@ -193,13 +193,13 @@ fn main() {
     let check_version_thread = thread::Builder::new()
         .name("check-version".to_string())
         .spawn::<_, Option<String>>(|| {
-            let client = reqwest::blocking::ClientBuilder::new()
-                .user_agent("stm32tesseract-cli")
-                .timeout(std::time::Duration::from_secs(5))
-                .build()
-                .ok()?;
+            let client = reqwest_unified_builder::build_blocking().ok()?;
             let url = "https://api.github.com/repos/ArcticLampyrid/stm32tesseract/releases/latest";
-            let response = client.get(url).send().ok()?;
+            let response = client
+                .get(url)
+                .timeout(Duration::from_secs(10))
+                .send()
+                .ok()?;
             let json = response.json::<serde_json::Value>().ok()?;
             let tag_name = json.get("tag_name").and_then(serde_json::Value::as_str);
             tag_name.map(str::to_string)
