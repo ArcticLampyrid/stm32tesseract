@@ -10,7 +10,7 @@ mod ninja_install;
 mod openocd_install;
 mod path_env;
 mod pkg_manager;
-mod reqwest_unified_builder;
+mod reqwest_instance;
 mod resources_dir;
 mod simple_template;
 use clap::{Parser, Subcommand};
@@ -194,7 +194,7 @@ fn main() {
     let check_version_thread = thread::Builder::new()
         .name("check-version".to_string())
         .spawn::<_, Option<String>>(|| {
-            let client = reqwest_unified_builder::build_blocking().ok()?;
+            let client = reqwest_instance::blocking_client();
             let url = "https://api.github.com/repos/ArcticLampyrid/stm32tesseract/releases/latest";
             let response = client
                 .get(url)

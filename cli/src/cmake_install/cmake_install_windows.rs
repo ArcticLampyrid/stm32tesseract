@@ -2,7 +2,7 @@ use scopeguard::defer;
 
 use crate::download_manager::download_file;
 use crate::path_env::add_to_path_env;
-use crate::reqwest_unified_builder;
+use crate::reqwest_instance;
 use crate::{error::InstallError, gh_helper};
 use std::env;
 use std::path::PathBuf;
@@ -51,7 +51,7 @@ pub fn install_cmake_windows() -> Result<(), InstallError> {
     };
     let cmake_installer_suffix = format!("-windows-{}.msi", cmake_arch_suffix);
 
-    let client = reqwest_unified_builder::build_blocking()?;
+    let client = reqwest_instance::blocking_client();
     let url_remote = gh_helper::get_latest_release_url_with_fallback(
         &client,
         "Kitware",
