@@ -11,5 +11,5 @@ fn build_blocking_client() -> reqwest::blocking::Client {
 }
 
 pub fn blocking_client() -> &'static reqwest::blocking::Client {
-    BLOCKING_CLIENT.get_or_init(|| build_blocking_client())
+    BLOCKING_CLIENT.get_or_init(build_blocking_client)
 }

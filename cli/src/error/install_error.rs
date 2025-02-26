@@ -1,13 +1,15 @@
+use crate::pkgsrc;
 use std::{io, process::ExitStatus};
-
 use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum InstallError {
+    #[error("failed to fetch package: {0:?}")]
+    FetchPackage(#[from] pkgsrc::FetchPackageError),
+    #[error("failed to match asset: {0:?}")]
+    MatchAsset(#[from] pkgsrc::MatchAssetError),
     #[error("failed to download: {0:?}")]
     HttpFetchFailed(#[from] reqwest::Error),
-    #[error("http status: {0:?}")]
-    HttpStatusError(reqwest::StatusCode),
     #[error("metadata error")]
     MetadataError(),
     #[error("io failed: {0:?}")]

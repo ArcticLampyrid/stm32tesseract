@@ -5,11 +5,11 @@ mod cmake_project_generator;
 mod cproject_reader;
 mod download_manager;
 mod error;
-mod gh_helper;
 mod ninja_install;
 mod openocd_install;
 mod path_env;
 mod pkg_manager;
+mod pkgsrc;
 mod reqwest_instance;
 mod resources_dir;
 mod simple_template;
@@ -195,14 +195,14 @@ fn main() {
         .name("check-version".to_string())
         .spawn::<_, Option<String>>(|| {
             let client = reqwest_instance::blocking_client();
-            let url = "https://api.github.com/repos/ArcticLampyrid/stm32tesseract/releases/latest";
+            let url = "https://stm32tesseract.alampy.com/campanula/v1/package/stm32tesseract";
             let response = client
                 .get(url)
                 .timeout(Duration::from_secs(10))
                 .send()
                 .ok()?;
             let json = response.json::<serde_json::Value>().ok()?;
-            let tag_name = json.get("tag_name").and_then(serde_json::Value::as_str);
+            let tag_name = json.get("version_name").and_then(serde_json::Value::as_str);
             tag_name.map(str::to_string)
         });
     let cli = Cli::parse();

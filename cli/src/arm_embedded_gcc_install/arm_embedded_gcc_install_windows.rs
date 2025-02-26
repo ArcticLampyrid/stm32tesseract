@@ -1,6 +1,5 @@
 use crate::{
-    download_manager::download_file, error::InstallError, gh_helper, path_env::add_to_path_env,
-    reqwest_instance,
+    download_manager::download_file, error::InstallError, path_env::add_to_path_env, pkgsrc,
 };
 use scopeguard::defer;
 use std::{collections::HashSet, env, fs::File, path::PathBuf};
@@ -73,18 +72,16 @@ pub fn install_arm_embedded_gcc_windows() -> Result<(), InstallError> {
         return Ok(());
     }
 
-    let client = reqwest_instance::blocking_client();
-    let url_remote = gh_helper::get_latest_release_url_with_fallback(
-        &client,
-        "xpack-dev-tools",
-        "arm-none-eabi-gcc-xpack",
-        |assert_name| assert_name.ends_with("-win32-x64.zip"),
-        "https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v13.3.1-1.1/xpack-arm-none-eabi-gcc-13.3.1-1.1-win32-x64.zip",
-    );
-    let url_remote = gh_helper::elect_mirror(url_remote);
+    if env::consts::ARCH == "x86" {
+        return Err(InstallError::ArchNotSupported());
+    }
+    let package = pkgsrc::fetch_package("arm-none-eabi-gcc-xpack")?;
+    let url_remote = package
+        .match_asset(|assert| assert.name().ends_with("-win32-x64.zip"))?
+        .download_url();
 
     println!("Downloading {}", url_remote);
-    let path_local = download_file(&url_remote)?;
+    let path_local = download_file(url_remote)?;
     defer! {
         let _ = std::fs::remove_file(path_local.as_path());
     }

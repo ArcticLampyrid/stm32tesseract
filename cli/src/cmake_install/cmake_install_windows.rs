@@ -1,9 +1,9 @@
 use scopeguard::defer;
 
 use crate::download_manager::download_file;
+use crate::error::InstallError;
 use crate::path_env::add_to_path_env;
-use crate::reqwest_instance;
-use crate::{error::InstallError, gh_helper};
+use crate::pkgsrc;
 use std::env;
 use std::path::PathBuf;
 
@@ -51,22 +51,13 @@ pub fn install_cmake_windows() -> Result<(), InstallError> {
     };
     let cmake_installer_suffix = format!("-windows-{}.msi", cmake_arch_suffix);
 
-    let client = reqwest_instance::blocking_client();
-    let url_remote = gh_helper::get_latest_release_url_with_fallback(
-        &client,
-        "Kitware",
-        "CMake",
-        |assert_name| assert_name.ends_with(cmake_installer_suffix.as_str()),
-        format!(
-            "https://github.com/Kitware/CMake/releases/download/v3.30.5/cmake-3.30.5{}",
-            cmake_installer_suffix
-        )
-        .as_str(),
-    );
-    let url_remote = gh_helper::elect_mirror(url_remote);
+    let package = pkgsrc::fetch_package("cmake")?;
+    let url_remote = package
+        .match_asset(|assert| assert.name().ends_with(cmake_installer_suffix.as_str()))?
+        .download_url();
 
     println!("Downloading {}", url_remote);
-    let path_local = download_file(&url_remote)?;
+    let path_local = download_file(url_remote)?;
     defer! {
         let _ = std::fs::remove_file(path_local.as_path());
     }

@@ -1,35 +1,26 @@
 use std::{env, fs::File};
 
 use crate::{
-    download_manager::download_file, error::InstallError, gh_helper, path_env::add_to_path_env,
-    reqwest_instance,
+    download_manager::download_file, error::InstallError, path_env::add_to_path_env, pkgsrc,
 };
 use scopeguard::defer;
 use zip::ZipArchive;
 
 pub fn install_ninja_windows() -> Result<(), InstallError> {
-    let client = reqwest_instance::blocking_client();
     let platform_suffix = match env::consts::ARCH {
         "x86" => "win",
         "x86_64" => "win",
         "aarch64" => "winarm64",
         _ => return Err(InstallError::ArchNotSupported()),
     };
-    let url_for_ninja_win_zip = gh_helper::get_latest_release_url_with_fallback(
-        &client,
-        "ninja-build",
-        "ninja",
-        |assert_name| assert_name == "ninja-win.zip",
-        format!(
-            "https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-{}.zip",
-            platform_suffix
-        )
-        .as_str(),
-    );
-    let url_remote = gh_helper::elect_mirror(url_for_ninja_win_zip);
+    let archive_name = format!("ninja-{}.zip", platform_suffix);
+    let package = pkgsrc::fetch_package("ninja")?;
+    let url_remote = package
+        .match_asset(|assert| assert.name() == archive_name)?
+        .download_url();
 
     println!("Downloading {}", url_remote);
-    let path_local = download_file(&url_remote)?;
+    let path_local = download_file(url_remote)?;
     defer! {
         let _ = std::fs::remove_file(path_local.as_path());
     }
