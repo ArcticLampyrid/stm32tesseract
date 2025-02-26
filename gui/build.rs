@@ -12,5 +12,7 @@ fn main() {
             println!("cargo:rerun-if-changed={}", path.path().display());
         }
     }
-    embed_resource::compile("win32_resource/app.rc", embed_resource::NONE);
+    embed_resource::compile("win32_resource/app.rc", embed_resource::NONE)
+        .manifest_required()
+        .unwrap();
 }

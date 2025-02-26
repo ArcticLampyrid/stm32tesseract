@@ -8,8 +8,8 @@ license = "BSD-3-Clause"
 [dependencies]
 base64 = "0.22"
 clap = { version = "4.4.6", features = ["derive"] }
-which = "6.0.0"
-thiserror = "1.0"
+which = "7"
+thiserror = "2"
 reqwest = { version = "0.12", default-features = false, features = [
     "blocking",
     "http2",
@@ -35,7 +35,7 @@ semver = "1.0"
 url = "2"
 
 [target.'cfg(windows)'.dependencies]
-winreg = "0.51.0"
+winreg = "0.55"
 
 [package.metadata.deb]
 depends = []
