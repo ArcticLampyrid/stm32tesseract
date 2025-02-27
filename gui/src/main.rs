@@ -1,15 +1,14 @@
 #![windows_subsystem = "windows"]
 mod command_params;
+mod offscreen_terminal;
 use clap::Parser;
 use command_params::CommandParams;
+use offscreen_terminal::OffScreenTerminal;
 use once_cell::sync::Lazy;
 use portable_pty::{native_pty_system, CommandBuilder, ExitStatus, PtySize};
 use rfd::FileDialog;
-use slint::Weak;
-use std::{
-    io::{BufRead, BufReader},
-    path::PathBuf,
-};
+use slint::{SharedString, Weak};
+use std::path::PathBuf;
 
 slint::include_modules!();
 
@@ -207,8 +206,8 @@ where
     }
     let pty_system = native_pty_system();
     let pair = pty_system.openpty(PtySize {
-        rows: 256,
-        cols: 256,
+        rows: 64,
+        cols: 1024,
         pixel_width: 0,
         pixel_height: 0,
     });
@@ -237,26 +236,48 @@ where
             return;
         }
     };
+    let writer = match pair.master.take_writer() {
+        Ok(writer) => writer,
+        Err(e) => {
+            if let Some(ui) = ui_handle_ref.upgrade() {
+                let mut output = ui.get_output();
+                output.push_str(format!("// Failed to get writer: {}\n", e).as_str());
+                ui.set_output(output);
+            }
+            on_complete(&ExitStatus::with_exit_code(1));
+            return;
+        }
+    };
 
     let ui_handle = ui_handle_ref.clone();
     let join_handle = std::thread::spawn(move || {
-        let mut lines_reader = BufReader::new(reader);
+        let mut reader = reader;
+        let mut buf = [0; 2048];
+        let mut state_machine = vte::Parser::new();
+        let mut performer = OffScreenTerminal::new(1024, writer);
         loop {
-            let mut next_line = String::new();
-            match lines_reader.read_line(&mut next_line) {
+            match reader.read(&mut buf) {
                 Ok(0) => break,
-                Ok(_) => {
+                Ok(n) => {
+                    state_machine.advance(&mut performer, &buf[..n]);
+                    let mut output: SharedString = performer.to_string().into();
+                    let mut has_error = false;
+                    if let Some(err) = performer.take_last_error() {
+                        output.push_str(format!("// Error: {}\n", err).as_str());
+                        has_error = true;
+                    }
                     let _ = ui_handle.upgrade_in_event_loop(move |ui| {
-                        let mut output = ui.get_output();
-                        output.push_str(strip_ansi_escapes::strip_str(next_line).as_str());
                         ui.set_output(output);
                         ui.invoke_output_scroll_to_end();
                     });
+                    if has_error {
+                        break;
+                    }
                 }
                 Err(e) => {
                     let _ = ui_handle.upgrade_in_event_loop(move |ui| {
                         let mut output = ui.get_output();
-                        output.push_str(format!("// Failed to read line: {}\n", e).as_str());
+                        output.push_str(format!("// Failed to read: {}\n", e).as_str());
                         ui.set_output(output);
                         ui.invoke_output_scroll_to_end();
                     });
