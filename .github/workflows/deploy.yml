@@ -15,7 +15,8 @@ jobs:
   generate-release-notes:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: actions/setup-node@v4
@@ -31,7 +32,15 @@ jobs:
     needs: 
       - generate-release-notes
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Setup Rust toolchain
+      uses: moonrepo/setup-rust@v1
+      with:
+        channel: stable
+        cache: true
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
     - name: Install NSIS
       shell: pwsh
       run: |
@@ -67,9 +76,22 @@ jobs:
     needs: 
       - generate-release-notes
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Setup Rust toolchain
+      uses: moonrepo/setup-rust@v1
+      with:
+        channel: stable
+        cache: true
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
     - name: Install Packaging Tools
       run: cargo install cargo-deb
+    - name: Install Linux dependencies
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libxkbcommon-x11-dev libudev-dev libinput-dev libfontconfig-dev
     - name: Build (Release)
       run: cargo build --release --verbose
     - name: Package (Debian)

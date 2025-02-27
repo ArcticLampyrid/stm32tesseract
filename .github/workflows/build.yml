@@ -14,19 +14,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        include:
-        - os: ubuntu-latest
-        - os: windows-latest
-        - os: macos-latest
+        os: [ubuntu-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
 
     steps:
-    # Workaround for https://github.com/rust-skia/rust-skia/issues/1049
-    - uses: actions/setup-python@v5
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Setup Rust toolchain
+      uses: moonrepo/setup-rust@v1
       with:
-        python-version: '3.12' 
-    - uses: actions/checkout@v3
+        channel: stable
+        cache: true
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+    - name: Install Linux dependencies
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libxkbcommon-x11-dev libudev-dev libinput-dev libfontconfig-dev
     - name: Build
       run: cargo build --verbose

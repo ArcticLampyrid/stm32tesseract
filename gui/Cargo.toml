@@ -8,7 +8,7 @@ license = "BSD-3-Clause"
 
 [dependencies]
 clap = { version = "4.4.6", features = ["derive"] }
-slint = { version = "1.8", default-features = false, features = [
+slint = { version = "1.9", default-features = false, features = [
     "compat-1-2",
     "accessibility",
     "std",
@@ -35,7 +35,7 @@ windows = { version = "0.59", features = [
 check_elevation = "0.2"
 
 [build-dependencies]
-slint-build = "1.0"
+slint-build = "1.9"
 embed-resource = "3.0"
 
 [package.metadata.deb]
