@@ -23,7 +23,7 @@ impl PackageAcquirer for CampanulaPkgAcquirer {
     fn latest(&self) -> GenericResult<PackageInfo> {
         let client = reqwest_instance::blocking_client();
         let url = if self.base_url.ends_with('/') {
-            format!("{}/v1/package/{}", self.base_url, self.name)
+            format!("{}v1/package/{}", self.base_url, self.name)
         } else {
             format!("{}/v1/package/{}", self.base_url, self.name)
         };
